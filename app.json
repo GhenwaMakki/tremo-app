@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "tremo-app",
+    "slug": "tremo-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/tremo.png",
+    "scheme": "tremoapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "jsEngine": "hermes",
+
+    "splash": {
+      "image": "./assets/images/tremo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.tremoapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.tremoapp",
+      "permissions": ["NOTIFICATIONS"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+        
+      [
+        "react-native-ble-plx",
+        {
+          "bluetoothAlwaysPermission": "Allow Tremo to connect to your device."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

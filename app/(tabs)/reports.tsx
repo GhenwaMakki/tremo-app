@@ -9,6 +9,12 @@ import { generatePDFReport } from '../../utils/pdfReport';
 import { colors } from '@/constants/theme';
 import { useBLE } from '@/context/BLEContext';
 
+
+//for testing 
+//import { saveSessionToFirestore, getUserSessions } from "@/utils/firestoreReports";
+//import { useAuth } from "@/context/authContext";
+
+
 // -----------------------------
 // Types
 // -----------------------------
@@ -35,6 +41,8 @@ const generateUniqueId = () => Math.random().toString(36).slice(2, 11);
 // Component
 // -----------------------------
 export default function ReportsScreen() {
+  //for testing:
+ // const { user } = useAuth();
   const { device } = useBLE();
 
   // persisted state
@@ -121,6 +129,35 @@ export default function ReportsScreen() {
       mounted = false;
     };
   }, []);
+
+
+
+// ----------------------------------------
+// Load from Firestore (TEST ONLY)
+// ----------------------------------------
+//useEffect(() => {
+//   //if (!user) return;
+
+//   const fetchSessions = async () => {
+//     try {
+//       const firebaseSessions = await getUserSessions(user.uid);
+
+//       //CONVERT SESSIONS to match your local TremorSession type
+//       const normalized = firebaseSessions.map(s => ({
+//         ...s,
+//         duration: Number(s.duration), // pdfReport gives string, convert to number
+//       }));
+
+//       setSessions(normalized);
+//     } catch (err) {
+//       console.warn("Error fetching Firestore sessions:", err);
+//     }
+//   };
+
+//   fetchSessions();
+// }, [user]);
+
+
 
   // ----------------------------------------
   // Protected persistence (ONLY after load)
@@ -441,6 +478,87 @@ export default function ReportsScreen() {
         <Feather name="download" size={22} color="white" />
         <Text style={styles.downloadText}>Download report</Text>
       </Pressable>
+
+
+     {/* =========================== */}
+          {/* FIRESTORE TESTING BUTTONS   */}
+          {/* =========================== */}
+
+{/* Save fake test session */}
+ {/* 
+<Pressable
+  style={[styles.downloadBtn, { backgroundColor: "#2D9CDB", marginTop: 20 }]}
+  onPress={async () => {
+    if (!user) {
+      alert("No user logged in.");
+      return;
+    }
+
+    const fakeSession = {
+      mode: "TEST",
+      duration: 120,
+      before: 6.2,
+      after: 3.7,
+      avgFrequency: 4.5,
+      reduction: ((6.2 - 3.7) / 6.2) * 100,
+    };
+
+    try {
+      await saveSessionToFirestore({
+        userId: user.uid,
+        ...fakeSession,
+      });
+
+      alert("Test session saved to Firestore!");
+    } catch (err) {
+      console.error(err);
+      alert("Error saving session.");
+    }
+  }}
+>
+  <Text style={styles.downloadText}>Save Test Session to Firestore</Text>
+</Pressable>
+
+{/* Load sessions */}
+
+{/*}
+<Pressable
+  style={[styles.downloadBtn, { backgroundColor: "#27AE60", marginTop: 15 }]}
+  onPress={async () => {
+    if (!user) {
+      alert("No user logged in.");
+      return;
+    }
+
+    try {
+      const results = await getUserSessions(user.uid);
+      console.log("Firestore Sessions:", results);
+
+      alert(`Loaded ${results.length} sessions. Check console.`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load sessions.");
+    }
+  }}
+>
+  <Text style={styles.downloadText}>Load Sessions from Firestore</Text>
+</Pressable>
+
+{/* Display sessions */}
+
+{/*}
+{sessions.length > 0 && (
+  <View style={{ marginTop: 20 }}>
+    <Text style={{ fontSize: 18, fontWeight: "600" }}>Loaded Sessions:</Text>
+    {sessions.map((s) => (
+      <Text key={s.id} style={{ marginTop: 8 }}>
+        • {s.date} — {s.mode} — {s.avgFrequency.toFixed(2)} Hz
+      </Text>
+    ))}
+  </View>
+)}
+
+*/}
 
       <View style={{ height: 50 }} />
     </ScrollView>

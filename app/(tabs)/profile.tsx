@@ -75,7 +75,7 @@ export default function ProfileScreen() {
 
       await verifyBeforeUpdateEmail(user, newEmail);
 
-      alert("Verification email sent!\n\nPlease check your new email inbox and click the verification link to complete teh update");
+      alert("Verification email sent!\n\nPlease check your new email inbox and click the verification link to complete the update");
 
       setEmailModalVisible(false);
       setNewEmail("");
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 
-  // chnange email
+  // change email
   modalOverlay: {
   position: "absolute",
   top: 0,

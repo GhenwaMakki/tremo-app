@@ -11,8 +11,8 @@ import { useBLE } from '@/context/BLEContext';
 
 
 //for testing 
-//import { saveSessionToFirestore, getUserSessions } from "@/utils/firestoreReports";
-//import { useAuth } from "@/context/authContext";
+import { saveSessionToFirestore, getUserSessions } from "@/utils/firestoreReports";
+import { useAuth } from "@/context/authContext";
 
 
 // -----------------------------
@@ -42,7 +42,7 @@ const generateUniqueId = () => Math.random().toString(36).slice(2, 11);
 // -----------------------------
 export default function ReportsScreen() {
   //for testing:
- // const { user } = useAuth();
+  const { user } = useAuth();
   const { device } = useBLE();
 
   // persisted state
@@ -135,27 +135,27 @@ export default function ReportsScreen() {
 // ----------------------------------------
 // Load from Firestore (TEST ONLY)
 // ----------------------------------------
-//useEffect(() => {
-//   //if (!user) return;
+useEffect(() => {
+  if (!user) return;
 
-//   const fetchSessions = async () => {
-//     try {
-//       const firebaseSessions = await getUserSessions(user.uid);
+  const fetchSessions = async () => {
+    try {
+      const firebaseSessions = await getUserSessions(user.uid);
 
-//       //CONVERT SESSIONS to match your local TremorSession type
-//       const normalized = firebaseSessions.map(s => ({
-//         ...s,
-//         duration: Number(s.duration), // pdfReport gives string, convert to number
-//       }));
+      //CONVERT SESSIONS to match your local TremorSession type
+      const normalized = firebaseSessions.map(s => ({
+        ...s,
+        duration: Number(s.duration), // pdfReport gives string, convert to number
+      }));
 
-//       setSessions(normalized);
-//     } catch (err) {
-//       console.warn("Error fetching Firestore sessions:", err);
-//     }
-//   };
+      setSessions(normalized);
+    } catch (err) {
+      console.warn("Error fetching Firestore sessions:", err);
+    }
+  };
 
-//   fetchSessions();
-// }, [user]);
+  fetchSessions();
+}, [user]);
 
 
 
@@ -266,6 +266,30 @@ export default function ReportsScreen() {
                 reduction: data.reduction || 0,
                 avgFrequency: avgFreq,
               };
+
+              
+              //here are the changes 
+              //immediatly save the finishes session to firestore
+               
+              if (user) {
+                (async () => {
+                  try {
+                  await saveSessionToFirestore({
+                     userId: user.uid,
+                     mode: finishedSession.mode,
+                     duration: finishedSession.duration,
+                     before: finishedSession.before,
+                     after: finishedSession.after,
+                     avgFrequency: finishedSession.avgFrequency,
+                     reduction: finishedSession.reduction,
+                      });
+                  console.log("[FIRESTORE] Session saved successfully!");
+                  } catch (err) {
+                  console.warn("[FIRESTORE] Failed to save session:", err);
+                  }
+                  })();
+}
+
 
               // 1) Append session
               setSessions(prev => {
@@ -485,7 +509,7 @@ export default function ReportsScreen() {
           {/* =========================== */}
 
 {/* Save fake test session */}
- {/* 
+ {/*
 <Pressable
   style={[styles.downloadBtn, { backgroundColor: "#2D9CDB", marginTop: 20 }]}
   onPress={async () => {
@@ -521,7 +545,7 @@ export default function ReportsScreen() {
 
 {/* Load sessions */}
 
-{/*}
+{/*
 <Pressable
   style={[styles.downloadBtn, { backgroundColor: "#27AE60", marginTop: 15 }]}
   onPress={async () => {
@@ -546,7 +570,7 @@ export default function ReportsScreen() {
 
 {/* Display sessions */}
 
-{/*}
+{/*
 {sessions.length > 0 && (
   <View style={{ marginTop: 20 }}>
     <Text style={{ fontSize: 18, fontWeight: "600" }}>Loaded Sessions:</Text>
@@ -556,9 +580,7 @@ export default function ReportsScreen() {
       </Text>
     ))}
   </View>
-)}
-
-*/}
+)}*/}
 
       <View style={{ height: 50 }} />
     </ScrollView>

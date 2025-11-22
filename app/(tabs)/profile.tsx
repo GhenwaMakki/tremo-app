@@ -162,8 +162,15 @@ export default function ProfileScreen() {
   },[user]);
 
   const scheduleDailyReminder = async (time: Date) => {
+
+    //testing notification
+    console.log("🔔 Scheduling daily reminder...");
+     console.log("⏰ Requested time:", time.getHours(), ":", time.getMinutes());
+
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
+      //testing kmn
+      console.log("🔄 Cleared existing notifications");
 
       const trigger: Notifications.CalendarTriggerInput = {
         type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
@@ -171,6 +178,8 @@ export default function ProfileScreen() {
         minute: time.getMinutes(),
         repeats: true,
       };
+
+      console.log("🗓 Trigger:", trigger);``
 
       await Notifications.scheduleNotificationAsync({
         content: {
@@ -180,6 +189,9 @@ export default function ProfileScreen() {
         },
         trigger,
       });
+
+      
+
     } catch (err) {
       console.warn('Failed to schedule notification:', err);
     }

@@ -9,6 +9,9 @@ import * as Icons from 'phosphor-react-native'
 import Button from '@/components/Button'
 import { useRouter } from 'expo-router'
 import { useAuth } from '@/context/authContext'
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "@/firebaseConfig"; 
+
 
 const Signin = () => {
 
@@ -17,6 +20,21 @@ const Signin = () => {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const {signin} = useAuth();
+
+    const handleForgotPassword = async () => {
+        if (!emailRef.current || emailRef.current.trim() === "") {
+            Alert.alert("Reset Password", "Please enter your email first.");
+            return;
+        }
+
+        try {
+         await sendPasswordResetEmail(auth, emailRef.current.trim());
+        Alert.alert("Email Sent", "Check your inbox for a password reset link.");
+        } catch (error: any) {
+            console.log("Forgot password error:", error);
+            Alert.alert("Reset Failed", error?.message || "Something went wrong.");
+  }
+}; 
 
     const handleSubmit = async () => {
         if(!emailRef.current || !passwordRef.current){
@@ -45,7 +63,7 @@ const Signin = () => {
         router.replace('../home');
 
         console.log('email: ', emailRef.current);
-        console.log('password: ', passwordRef.current);
+        console.log('password: ', passwordRef.current);  
     }
 
   return (
@@ -71,9 +89,12 @@ const Signin = () => {
                 onChangeText={(value) => (passwordRef.current = value)}
                 icon={<Icons.LockIcon size={verticalScale(26)}/>}
             />
-            <Text style={{fontSize: 14, color: colors.text, alignSelf: 'flex-end'}}>
-                Forgot Password?
-            </Text>
+           <Pressable onPress={handleForgotPassword}>
+                <Text style={{fontSize: 14, color: colors.primaryDark, alignSelf: 'flex-end'}}>
+                  Forgot Password?
+                 </Text>
+            </Pressable>
+
             <Button loading={isLoading} onPress={handleSubmit}>
                 <Text style={{fontSize: 21, color: colors.white, fontWeight: 700}}>
                     Sign In

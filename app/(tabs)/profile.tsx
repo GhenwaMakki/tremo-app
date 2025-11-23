@@ -18,7 +18,8 @@ import { db } from "@/firebaseConfig";
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider, verifyBeforeUpdateEmail } from "firebase/auth";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
-
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "@/firebaseConfig"; 
 
 
 export default function ProfileScreen() {
@@ -59,6 +60,29 @@ export default function ProfileScreen() {
     }
     
   }
+
+   /* --------------------------
+      FORGOT PASSWORD FEATURE
+  ---------------------------*/
+
+  const handleModalForgotPassword = async () => {
+  if (!user?.email) {
+    Alert.alert("Reset Password", "No email found for this account.");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, user.email);
+    Alert.alert(
+      "Reset Email Sent",
+      "Please check your inbox and follow the link to reset your password."
+    );
+  } catch (err: any) {
+    console.log("Reset error:", err);
+    Alert.alert("Error", err?.message || "Could not send reset email.");
+  }
+};
+
 
    /* --------------------------
       CHANGE EMAIL FUNCTION
@@ -383,6 +407,14 @@ export default function ProfileScreen() {
               onChangeText={setCurrentPasswordForEmail}
             />
 
+            <TouchableOpacity onPress={handleModalForgotPassword}>
+              <Text style={{ color: "#5A5CE4", fontWeight: "600", marginBottom: 10 }}>
+                Forgot your password?
+              </Text>
+            </TouchableOpacity>
+
+
+
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={[styles.modalButton, { backgroundColor: "#E55656" }]}
@@ -428,6 +460,13 @@ export default function ProfileScreen() {
               value={currentPasswordForPassword}
               onChangeText={setCurrentPasswordForPassword}
              />
+
+             <TouchableOpacity onPress={handleModalForgotPassword}>
+              <Text style={{ color: "#5A5CE4", fontWeight: "600", marginBottom: 10 }}>
+                Forgot your password?
+              </Text>
+             </TouchableOpacity>
+
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
